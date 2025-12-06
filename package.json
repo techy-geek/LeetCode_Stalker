@@ -1,0 +1,29 @@
+{
+  "name": "leetcode-stalker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/techy-geek/LeetCode_Stalker.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/techy-geek/LeetCode_Stalker/issues"
+  },
+  "homepage": "https://github.com/techy-geek/LeetCode_Stalker#readme",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mongoose": "^9.0.1",
+    "react": "^19.2.1"
+  }
+}

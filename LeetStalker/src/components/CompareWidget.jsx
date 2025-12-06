@@ -145,7 +145,7 @@ const CompareWidget = ({ myStats, friends }) => {
         </div>
       ) : (
         <div style={{ textAlign: "center", color: "#666", padding: "20px" }}>
-          Select an opponent to start the battle
+         Please choose a coder to compare with.
         </div>
       )}
     </div>

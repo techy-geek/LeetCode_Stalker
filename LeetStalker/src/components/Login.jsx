@@ -35,13 +35,13 @@ const Login = ({ onLogin }) => {
         {/* --- LOGO SECTION --- */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
           <img 
-            src="/logo.png" 
+            src="/image.png" 
             alt="LeetStalker Logo" 
             style={{ 
               width: '80px', 
               height: '80px', 
               borderRadius: '50%',
-              boxShadow: '0 0 20px rgba(40, 175, 153, 0.4)',
+              boxShadow: '0 0 20px rgba(12, 143, 243, 0.4)',
               border: '2px solid rgba(40, 175, 153, 0.5)'
             }} 
             onError={(e) => { e.target.style.display = 'none' }}

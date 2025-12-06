@@ -10,6 +10,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Health Check Route
+app.get('/', (req, res) => {
+    res.send('LeetTracker Backend is successfully running! 🚀');
+});
 // --- 1. DATABASE CONNECTION ---
 // REPLACE THIS WITH YOUR OWN CONNECTION STRING IF NEEDED
 mongoose.connect(process.env.MONGO_URI)

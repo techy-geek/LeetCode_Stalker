@@ -35,7 +35,7 @@ function App() {
     if (!user) return;
     try {
       // The backend checks if the user exists on LeetCode first
-      await axios.post('http://localhost:3000/login', { username: user });
+      await axios.post('https://leettracker-oyfh.onrender.com/login', { username: user });
       
       localStorage.setItem('lc_user', user);
       setMyUsername(user);
@@ -52,7 +52,7 @@ function App() {
   // 2. FETCH MY STATS (For "Me vs Them" Chart)
   const fetchMyStats = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/stats/${myUsername}`);
+      const res = await axios.get(`https://leettracker-oyfh.onrender.com/stats/${myUsername}`);
       setMyStats(res.data);
     } catch (error) {
       console.error("Failed to fetch my stats");
@@ -63,7 +63,7 @@ function App() {
   const refreshFriends = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3000/friends/${myUsername}`);
+      const response = await axios.get(`https://leettracker-oyfh.onrender.com/friends/${myUsername}`);
       // Sort: Highest Rating First
       const sorted = response.data.sort((a, b) => 
         (b.contestStats?.rating || 0) - (a.contestStats?.rating || 0)
@@ -85,7 +85,7 @@ function App() {
     }
 
     try {
-      await axios.post('http://localhost:3000/add-friend', {
+      await axios.post('https://leettracker-oyfh.onrender.com/add-friend', {
         username: myUsername,
         friendUsername: newFriend
       });
@@ -104,7 +104,7 @@ function App() {
     setFriends(friends.filter(f => f.username !== friendUsername));
 
     try {
-      await axios.post('http://localhost:3000/remove-friend', {
+      await axios.post('https://leettracker-oyfh.onrender.com/remove-friend', {
         username: myUsername,
         friendUsername: friendUsername
       });

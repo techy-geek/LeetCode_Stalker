@@ -7,7 +7,7 @@ const DailyChallenge = () => {
   useEffect(() => {
     const fetchDaily = async () => {
       try {
-        const res = await axios.get("http://localhost:3000/daily-question");
+        const res = await axios.get("https://leettracker-oyfh.onrender.com/daily-question");
         setDaily(res.data);
       } catch (error) {
         console.error("Error fetching daily");

@@ -1,5 +1,5 @@
 /* src/App.css */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap");
 
 :root {
   --lc-bg: #1a1a1a;
@@ -14,18 +14,18 @@
 body {
   background-color: var(--lc-bg);
   color: var(--lc-text);
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   margin: 0;
   padding-left: 300px;
   padding-right: 300px;
 }
 
 .container {
-  max-width: 100%; 
-  width: 100%;        
-  margin: 0 auto;    
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
   padding: 40px 20px;
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 /* --- PROFESSIONAL LOGIN PAGE STYLES --- */
 
@@ -42,7 +42,7 @@ body {
 /* 2. The Card with Glass/Glow Effect */
 .login-card {
   background: rgba(40, 40, 40, 0.6); /* Semi-transparent */
-  backdrop-filter: blur(10px);        /* Glass blur */
+  backdrop-filter: blur(10px); /* Glass blur */
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 3rem;
   border-radius: 20px;
@@ -54,8 +54,14 @@ body {
 }
 
 @keyframes floatIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 3. Inputs */
@@ -119,35 +125,67 @@ body {
 }
 
 @keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  50% { transform: translateX(5px); }
-  75% { transform: translateX(-5px); }
-  100% { transform: translateX(0); }
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 /* HEADER & INPUTS */
 .header-row {
-  display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .input-group {
-  display: flex; gap: 10px; margin-bottom: 30px;
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
 }
 
 input {
-  background: var(--lc-card); border: 1px solid #3e3e3e; color: white;
-  padding: 12px; border-radius: 8px; flex-grow: 1; outline: none;
+  background: var(--lc-card);
+  border: 1px solid #3e3e3e;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  flex-grow: 1;
+  outline: none;
 }
 
 button {
-  background: #3e3e3e; color: white; border: none; padding: 10px 20px;
-  border-radius: 8px; cursor: pointer; font-weight: 600;
+  background: #3e3e3e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
 }
-button:hover { background: #4e4e4e; }
+button:hover {
+  background: #4e4e4e;
+}
 
-.primary-btn { background: #ffa116; color: black; }
-.primary-btn:hover { background: #ffb84d; }
+.primary-btn {
+  background: #ffa116;
+  color: black;
+}
+.primary-btn:hover {
+  background: #ffb84d;
+}
 
 /* --- CARD DESIGN --- */
 .grid {
@@ -158,19 +196,26 @@ button:hover { background: #4e4e4e; }
 
 /* 2 cards per row only on desktop */
 @media (min-width: 768px) {
-  .grid { grid-template-columns: 1fr 1fr; } 
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .card {
   background: var(--lc-card);
   padding: 20px;
   border-radius: 12px;
+  height: auto; /* Allow card to grow */
+  min-height: 200px;
   position: relative;
   border: 1px solid transparent;
   transition: all 0.2s;
 }
 
-.card:hover { border-color: #444; transform: translateY(-2px); }
+.card:hover {
+  border-color: #444;
+  transform: translateY(-2px);
+}
 
 /* Top Row: Name and Delete Button */
 .card-header {
@@ -180,8 +225,15 @@ button:hover { background: #4e4e4e; }
   margin-bottom: 15px;
 }
 
-.username { font-size: 1.1rem; font-weight: bold; color: white; text-decoration: none; }
-.username:hover { color: #ffa116; }
+.username {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+}
+.username:hover {
+  color: #ffa116;
+}
 
 /* The Delete Button (X) */
 .delete-btn {
@@ -193,7 +245,10 @@ button:hover { background: #4e4e4e; }
   width: auto;
   margin: 0;
 }
-.delete-btn:hover { color: var(--lc-hard); background: rgba(255, 55, 95, 0.1); }
+.delete-btn:hover {
+  color: var(--lc-hard);
+  background: rgba(255, 55, 95, 0.1);
+}
 
 /* STATS ROW (Fixed to Grid version) */
 .stats-row {
@@ -213,19 +268,19 @@ button:hover { background: #4e4e4e; }
   align-items: center;
 }
 
-.stat-label { 
-  font-size: 0.7rem; 
-  color: var(--lc-label); 
-  text-transform: uppercase; 
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--lc-label);
+  text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
 }
 
-.stat-value { 
-  font-size: 1.1rem; 
-  font-weight: 700; 
-  color: white; 
-  white-space: nowrap; 
+.stat-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  white-space: nowrap;
 }
 
 /* DIFFICULTY BREAKDOWN */
@@ -234,7 +289,7 @@ button:hover { background: #4e4e4e; }
   justify-content: space-between;
   margin-top: 12px;
   padding-top: 12px;
-  border-top: 1px solid #3e3e3e; 
+  border-top: 1px solid #3e3e3e;
 }
 
 .diff-item {
@@ -250,15 +305,27 @@ button:hover { background: #4e4e4e; }
   margin-bottom: 2px;
 }
 
-.diff-val { font-weight: 600; }
+.diff-val {
+  font-weight: 600;
+}
 
 /* PROGRESS BAR */
 .progress-bg {
-  height: 6px; background: #3e3e3e; border-radius: 3px; display: flex; overflow: hidden;
+  height: 6px;
+  background: #3e3e3e;
+  border-radius: 3px;
+  display: flex;
+  overflow: hidden;
 }
-.seg-easy { background: var(--lc-easy); }
-.seg-medium { background: var(--lc-medium); }
-.seg-hard { background: var(--lc-hard); }
+.seg-easy {
+  background: var(--lc-easy);
+}
+.seg-medium {
+  background: var(--lc-medium);
+}
+.seg-hard {
+  background: var(--lc-hard);
+}
 
 /* LINKS & MISC */
 .problem-link {
@@ -268,7 +335,7 @@ button:hover { background: #4e4e4e; }
   transition: color 0.2s;
 }
 .problem-link:hover {
-  color: var(--lc-medium); 
+  color: var(--lc-medium);
   text-decoration: underline;
 }
 
@@ -282,13 +349,24 @@ button:hover { background: #4e4e4e; }
   font-size: 1rem;
   outline: none;
 }
-.dark-select:focus { border-color: var(--lc-medium); }
+.dark-select:focus {
+  border-color: var(--lc-medium);
+}
 
 .legend {
-  display: flex; justify-content: space-between; margin-top: 8px; font-size: 0.75rem; color: var(--lc-label);
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: var(--lc-label);
 }
-.dot { display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 4px; }
-
+.dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 4px;
+}
 
 /* =======================================================
    RESPONSIVE FIXES (Only affects smaller screens)
@@ -324,7 +402,7 @@ button:hover { background: #4e4e4e; }
   button {
     width: 100%; /* Make buttons full width on phone */
   }
-  
+
   .dark-select {
     width: 100%; /* Make dropdowns full width */
   }

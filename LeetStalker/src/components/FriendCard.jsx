@@ -1,11 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import SolvedCircle from './SolvedCircle';
 
-const FriendCard = ({ data, onRemove }) => {
+const FriendCard = ({ data, onRemove, goal, onSetGoal }) => {
+  const [isEditingGoal, setIsEditingGoal] = useState(false);
+  const [tempGoal, setTempGoal] = useState(goal || 0);
+
+  // Safety check
+  if (!data) return null;
+
   const easy = data.easy || 0;
   const medium = data.medium || 0;
   const hard = data.hard || 0;
   const total = data.totalSolved || 0;
+  
+  const displayBadges = data.badges ? data.badges.slice(0, 3) : [];
+
+  // --- GOAL LOGIC ---
+  const isOwner = !!onSetGoal; // If onSetGoal exists, this is YOUR card
+  const progress = goal > 0 ? Math.min((total / goal) * 100, 100) : 0;
+  const isGoalMet = total >= goal && goal > 0;
+
+  const handleSaveGoal = () => {
+    onSetGoal(Number(tempGoal));
+    setIsEditingGoal(false);
+  };
 
   const formatTime = (timestamp) => {
     if (!timestamp) return '';
@@ -14,18 +32,17 @@ const FriendCard = ({ data, onRemove }) => {
   };
 
   return (
-    // CHANGE 1: Add Gold Border if it's YOUR card (when onRemove is undefined)
     <div className="card" style={!onRemove ? {border: '1px solid #ffa116'} : {}}>
       
       {/* 1. Header */}
       <div className="card-header">
-        <a href={`https://leetcode.com/${data.username}`} target="_blank" rel="noreferrer" className="username">
-          {data.username} 
-          {/* CHANGE 2: Add "(You)" label */}
-          {!onRemove && <span style={{fontSize:'0.8rem', color:'#ffa116', marginLeft:'6px'}}>(You)</span>}
-        </a>
+        <div style={{display:'flex', alignItems:'center'}}>
+            <a href={`https://leetcode.com/${data.username}`} target="_blank" rel="noreferrer" className="username">
+            {data.username}
+            </a>
+            {!onRemove && <span style={{fontSize:'0.8rem', color:'#ffa116', marginLeft:'6px', fontWeight: 'bold'}}>(You)</span>}
+        </div>
         
-        {/* CHANGE 3: Only show Delete button if onRemove exists */}
         {onRemove && (
           <button className="delete-btn" onClick={() => onRemove(data.username)}>✕</button>
         )}
@@ -33,11 +50,8 @@ const FriendCard = ({ data, onRemove }) => {
 
       {/* 2. Main Content */}
       <div className="card-content" style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
-        
-        {/* LEFT: Circular Counter */}
         <SolvedCircle easy={easy} medium={medium} hard={hard} total={total} />
 
-        {/* RIGHT: Stats */}
         <div style={{flexGrow: 1}}>
           <div style={{display: 'flex', justifyContent: 'space-between', marginBottom: '10px', borderBottom: '1px solid #333', paddingBottom: '8px'}}>
             <div style={{textAlign: 'center'}}>
@@ -49,7 +63,7 @@ const FriendCard = ({ data, onRemove }) => {
             <div style={{textAlign: 'center'}}>
                <div style={{color: '#888', fontSize: '0.7rem'}}>Rating</div>
                <div style={{color: 'white', fontWeight: '600'}}>
-                 {data.contestStats?.rating || 'N/A'}
+                 {data.contestStats?.rating ? Math.round(data.contestStats.rating) : 'N/A'}
                </div>
             </div>
           </div>
@@ -68,24 +82,91 @@ const FriendCard = ({ data, onRemove }) => {
         </div>
       </div>
 
-      {/* 3. Footer: Last Activity (Clickable) */}
+      {/* --- 3. NEW: PERSONAL GOAL TRACKER (Only shows if it is YOU) --- */}
+      {isOwner && (
+        <div style={{marginTop: '15px', background: '#222', padding: '10px', borderRadius: '8px'}}>
+          
+          {/* Header Row: Title + Edit Button */}
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px'}}>
+             <span style={{fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px'}}>
+               Goal
+             </span>
+             <button 
+               onClick={() => setIsEditingGoal(!isEditingGoal)}
+               style={{background: 'none', border: 'none', color: '#666', fontSize: '0.7rem', cursor: 'pointer', padding: 0}}
+             >
+               {isEditingGoal ? 'Cancel' : 'Edit'}
+             </button>
+          </div>
+
+          {/* Logic: Show Input if editing, otherwise show Progress Bar */}
+          {isEditingGoal ? (
+             <div style={{display: 'flex', gap: '5px'}}>
+               <input 
+                 type="number" 
+                 value={tempGoal} 
+                 onChange={(e) => setTempGoal(e.target.value)}
+                 className="dark-select"
+                 style={{padding: '4px 8px', fontSize: '0.9rem', width: '80px'}}
+                 placeholder="Target"
+               />
+               <button onClick={handleSaveGoal} className="primary-btn" style={{padding: '4px 10px', fontSize: '0.8rem'}}>
+                 Save
+               </button>
+             </div>
+          ) : (
+             <div>
+               {/* Progress Bar Container */}
+               <div style={{height: '8px', background: '#444', borderRadius: '4px', overflow: 'hidden', marginBottom: '5px'}}>
+                  <div style={{
+                    height: '100%', 
+                    width: `${progress}%`, 
+                    background: isGoalMet ? '#00b8a3' : '#ffa116', // Teal if done, Orange if working
+                    transition: 'width 0.5s ease'
+                  }}></div>
+               </div>
+               
+               {/* Text Status */}
+               <div style={{display:'flex', justifyContent:'space-between', fontSize:'0.75rem'}}>
+                  <span style={{color: 'white'}}>
+                    {total} <span style={{color:'#666'}}>/ {goal > 0 ? goal : '?'} Solved</span>
+                  </span>
+                  <span style={{color: isGoalMet ? '#00b8a3' : '#ffa116', fontWeight: 'bold'}}>
+                    {goal > 0 ? Math.round(progress) + '%' : 'Set Target'}
+                  </span>
+               </div>
+             </div>
+          )}
+        </div>
+      )}
+
+      {/* 4. Badges (Existing code) */}
+      {displayBadges.length > 0 && (
+        <div style={{display: 'flex', gap: '8px', marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #333', alignItems: 'center'}}>
+          {displayBadges.map((badge, idx) => {
+             let iconUrl = badge.icon;
+             if (iconUrl && !iconUrl.startsWith('http')) {
+                 if (!iconUrl.startsWith('/')) iconUrl = '/' + iconUrl;
+                 iconUrl = `https://leetcode.com${iconUrl}`;
+             }
+             if (!iconUrl) return null;
+             return (
+                <img key={idx} src={iconUrl} alt="Badge" title={badge.displayName} style={{width: '35px', height: '35px', objectFit: 'contain'}} />
+             );
+          })}
+        </div>
+      )}
+
+      {/* 5. Footer (Existing code) */}
       {data.lastSolved && (
         <div style={{marginTop: '15px', paddingTop: '8px', borderTop: '1px solid #333', fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-           <div style={{display:'flex', gap:'5px', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap'}}>
+           <div style={{display:'flex', gap:'5px', overflow:'hidden', maxWidth: '75%'}}>
              <span style={{color: '#888'}}>Last:</span>
-             <a 
-               href={`https://leetcode.com/problems/${data.lastSolved.titleSlug}`} 
-               target="_blank" 
-               rel="noreferrer"
-               className="problem-link"
-               title={data.lastSolved.title}
-             >
+             <a href={`https://leetcode.com/problems/${data.lastSolved.titleSlug}`} target="_blank" rel="noreferrer" className="problem-link" style={{whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis'}}>
                {data.lastSolved.title}
              </a>
            </div>
-           <span style={{color: '#666', minWidth:'50px', textAlign:'right'}}>
-             {formatTime(data.lastSolved.timestamp)}
-           </span>
+           <span style={{color: '#666', fontSize: '0.75rem'}}>{formatTime(data.lastSolved.timestamp)}</span>
         </div>
       )}
     </div>

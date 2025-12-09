@@ -5,7 +5,7 @@ import Login from "./components/Login";
 import FriendCard from "./components/FriendCard";
 import CompareWidget from "./components/CompareWidget";
 import DailyChallenge from "./components/DailyChallenge";
-import Leaderboard from "./components/Leaderboard"; 
+import Leaderboard from "./components/LeaderBoard"; 
 
 function App() {
   // --- STATE MANAGEMENT ---

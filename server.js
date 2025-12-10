@@ -49,7 +49,7 @@ async function fetchLeetCodeStats(username) {
             acSubmissionNum { difficulty count }
           }
         }
-        recentAcSubmissionList(username: $username, limit: 1) {
+        recentAcSubmissionList(username: $username, limit: 15) {
           title
           titleSlug
           timestamp
@@ -189,7 +189,9 @@ app.get('/friends/:username', async (req, res) => {
             hard: submitStats[3].count,
             totalSolved: submitStats[0].count,
             lastSolved: lastSolved,
+            recentSubmissions: data.recentAcSubmissionList || [], // Added full list
             badges: data.matchedUser.badges || [],
+
             submissionCalendar: data.matchedUser.submissionCalendar,
             contestStats: {
                 rating: Math.round(contestData.rating),
@@ -226,6 +228,8 @@ app.get('/stats/:username', async (req, res) => {
         hard: submitStats[3].count,
         totalSolved: submitStats[0].count,
         lastSolved: lastSolved,
+        recentSubmissions: data.recentAcSubmissionList || [], // Added full list
+        badges: data.matchedUser.badges || [],
         badges: data.matchedUser.badges || [],
         submissionCalendar: data.matchedUser.submissionCalendar,
         contestStats: {

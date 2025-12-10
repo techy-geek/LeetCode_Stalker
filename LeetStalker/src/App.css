@@ -27,6 +27,7 @@ body {
   padding: 40px 20px;
   box-sizing: border-box;
 }
+
 /* --- PROFESSIONAL LOGIN PAGE STYLES --- */
 
 /* 1. Full Page Wrapper with subtle gradient */
@@ -41,15 +42,18 @@ body {
 
 /* 2. The Card with Glass/Glow Effect */
 .login-card {
-  background: rgba(40, 40, 40, 0.6); /* Semi-transparent */
-  backdrop-filter: blur(10px); /* Glass blur */
+  background: rgba(40, 40, 40, 0.6);
+  /* Semi-transparent */
+  backdrop-filter: blur(10px);
+  /* Glass blur */
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 3rem;
   border-radius: 20px;
   width: 100%;
   max-width: 420px;
   text-align: center;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); /* Deep shadow */
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  /* Deep shadow */
   animation: floatIn 0.6s ease-out;
 }
 
@@ -58,6 +62,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -75,11 +80,13 @@ body {
   border-radius: 8px;
   margin-bottom: 15px;
   transition: all 0.2s;
-  box-sizing: border-box; /* Fixes padding width issues */
+  box-sizing: border-box;
+  /* Fixes padding width issues */
 }
 
 .login-input:focus {
-  border-color: #ffa116; /* LeetCode Orange Focus */
+  border-color: #ffa116;
+  /* LeetCode Orange Focus */
   background: #222;
   box-shadow: 0 0 0 4px rgba(255, 161, 22, 0.1);
 }
@@ -128,15 +135,19 @@ body {
   0% {
     transform: translateX(0);
   }
+
   25% {
     transform: translateX(-5px);
   }
+
   50% {
     transform: translateX(5px);
   }
+
   75% {
     transform: translateX(-5px);
   }
+
   100% {
     transform: translateX(0);
   }
@@ -175,6 +186,7 @@ button {
   cursor: pointer;
   font-weight: 600;
 }
+
 button:hover {
   background: #4e4e4e;
 }
@@ -183,6 +195,7 @@ button:hover {
   background: #ffa116;
   color: black;
 }
+
 .primary-btn:hover {
   background: #ffb84d;
 }
@@ -190,7 +203,8 @@ button:hover {
 /* --- CARD DESIGN --- */
 .grid {
   display: grid;
-  grid-template-columns: 1fr; /* Default to stack (mobile) */
+  grid-template-columns: 1fr;
+  /* Default to stack (mobile) */
   gap: 15px;
 }
 
@@ -205,7 +219,8 @@ button:hover {
   background: var(--lc-card);
   padding: 20px;
   border-radius: 12px;
-  height: auto; /* Allow card to grow */
+  height: auto;
+  /* Allow card to grow */
   min-height: 200px;
   position: relative;
   border: 1px solid transparent;
@@ -231,6 +246,7 @@ button:hover {
   color: white;
   text-decoration: none;
 }
+
 .username:hover {
   color: #ffa116;
 }
@@ -245,6 +261,7 @@ button:hover {
   width: auto;
   margin: 0;
 }
+
 .delete-btn:hover {
   color: var(--lc-hard);
   background: rgba(255, 55, 95, 0.1);
@@ -253,7 +270,8 @@ button:hover {
 /* STATS ROW (Fixed to Grid version) */
 .stats-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* 3 Equal columns */
+  grid-template-columns: 1fr 1fr 1fr;
+  /* 3 Equal columns */
   gap: 10px;
   margin-bottom: 15px;
   background: #323232;
@@ -317,12 +335,15 @@ button:hover {
   display: flex;
   overflow: hidden;
 }
+
 .seg-easy {
   background: var(--lc-easy);
 }
+
 .seg-medium {
   background: var(--lc-medium);
 }
+
 .seg-hard {
   background: var(--lc-hard);
 }
@@ -334,6 +355,7 @@ button:hover {
   font-weight: 600;
   transition: color 0.2s;
 }
+
 .problem-link:hover {
   color: var(--lc-medium);
   text-decoration: underline;
@@ -349,6 +371,7 @@ button:hover {
   font-size: 1rem;
   outline: none;
 }
+
 .dark-select:focus {
   border-color: var(--lc-medium);
 }
@@ -360,12 +383,64 @@ button:hover {
   font-size: 0.75rem;
   color: var(--lc-label);
 }
+
 .dot {
   display: inline-block;
   width: 6px;
   height: 6px;
   border-radius: 50%;
   margin-right: 4px;
+}
+
+/* --- HEATMAP STYLES --- */
+
+/* The labels (Mon, Wed, Fri) */
+.react-calendar-heatmap text {
+  font-size: 10px;
+  fill: #888;
+}
+
+/* Empty square (No submissions) */
+.react-calendar-heatmap .color-empty {
+  fill: #2d2d2d;
+  /* Dark Grey */
+  rx: 2px;
+  /* Rounded corners */
+}
+
+/* Level 1: 1 Submission */
+.react-calendar-heatmap .color-scale-1 {
+  fill: #0e4429;
+  /* Very dark green */
+  rx: 2px;
+}
+
+/* Level 2: 2 Submissions */
+.react-calendar-heatmap .color-scale-2 {
+  fill: #006d32;
+  /* Medium Green */
+  rx: 2px;
+}
+
+/* Level 3: 3-4 Submissions */
+.react-calendar-heatmap .color-scale-3 {
+  fill: #26a641;
+  /* Bright Green */
+  rx: 2px;
+}
+
+/* Level 4: 5+ Submissions (Fire!) */
+.react-calendar-heatmap .color-scale-4 {
+  fill: #39d353;
+  /* Neon Green */
+  rx: 2px;
+}
+
+/* Add some spacing between squares */
+.react-calendar-heatmap rect {
+  stroke: #1a1a1a;
+  /* Matches background to create "gap" effect */
+  stroke-width: 2px;
 }
 
 /* =======================================================
@@ -390,20 +465,93 @@ button:hover {
   }
 
   .header-row {
-    flex-direction: column; /* Stack the Title and Logout button */
+    flex-direction: column;
+    /* Stack the Title and Logout button */
     align-items: flex-start;
     gap: 15px;
   }
 
   .input-group {
-    flex-direction: column; /* Stack input and Add button */
+    flex-direction: column;
+    /* Stack input and Add button */
   }
 
   button {
-    width: 100%; /* Make buttons full width on phone */
+    width: 100%;
+    /* Make buttons full width on phone */
   }
 
   .dark-select {
-    width: 100%; /* Make dropdowns full width */
+    width: 100%;
+    /* Make dropdowns full width */
   }
 }
+
+/* MODAL STYLES */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: #1e1e1e;
+  padding: 25px;
+  border-radius: 12px;
+  border: 1px solid #333;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  animation: zoomIn 0.3s ease;
+  position: relative;
+}
+
+.close-btn {
+  background: transparent;
+  color: #888;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.close-btn:hover {
+  color: white;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+/* --- HEATMAP STYLES --- */
+.react-calendar-heatmap text { font-size: 10px; fill: #888; }
+.react-calendar-heatmap .color-empty { fill: #2d2d2d; rx: 2px; }
+.react-calendar-heatmap .color-scale-1 { fill: #0e4429; rx: 2px; }
+.react-calendar-heatmap .color-scale-2 { fill: #006d32; rx: 2px; }
+.react-calendar-heatmap .color-scale-3 { fill: #26a641; rx: 2px; }
+.react-calendar-heatmap .color-scale-4 { fill: #39d353; rx: 2px; }
+.react-calendar-heatmap rect { stroke: #1a1a1a; stroke-width: 2px; }

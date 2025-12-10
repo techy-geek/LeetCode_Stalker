@@ -11,14 +11,16 @@ app.use(cors());
 app.use(express.json());
 
 // --- 1. DATABASE CONNECTION ---
-mongoose.connect(process.env.MONGO_URI) 
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Mongo Error:", err));
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch((err) => console.error("Mongo Error:", err));
 
 // --- 2. DATABASE SCHEMA ---
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
-    friends: [String]
+    friends: [String],
+    // NEW: Array to store notification messages
+    notifications: { type: [String], default: [] }
 });
 
 const User = mongoose.model('User', UserSchema);
@@ -88,7 +90,7 @@ app.post('/login', async (req, res) => {
     if (!leetCodeData || !leetCodeData.matchedUser) {
         return res.status(404).json({ error: "User not found on LeetCode" });
     }
-    
+
     let user = await User.findOne({ username });
     if (!user) {
         user = new User({ username, friends: [] });
@@ -97,29 +99,73 @@ app.post('/login', async (req, res) => {
     res.json(user);
 });
 
-// Route B: Add Friend
+// Route B: Add Friend (MUTUAL + NOTIFICATION)
 app.post('/add-friend', async (req, res) => {
     const { username, friendUsername } = req.body;
-    
+
+    // 1. Prevent adding yourself
+    if (username === friendUsername) {
+        return res.status(400).json({ error: "You cannot add yourself!" });
+    }
+
+    // 2. Check if Friend exists on LeetCode
     const leetCodeData = await fetchLeetCodeStats(friendUsername);
     if (!leetCodeData || !leetCodeData.matchedUser) {
         return res.status(404).json({ error: "LeetCode user not found" });
     }
 
-    const user = await User.findOne({ username });
-    if (!user.friends.includes(friendUsername)) {
-        user.friends.push(friendUsername);
-        await user.save();
+    // 3. Add Friend to YOUR list (User A)
+    const userA = await User.findOne({ username });
+    if (!userA.friends.includes(friendUsername)) {
+        userA.friends.push(friendUsername);
+        await userA.save();
+    }
+
+    // 4. MUTUAL: Add YOU to Friend's list (User B) & Send Notification
+    let userB = await User.findOne({ username: friendUsername });
+
+    // If User B doesn't exist in our DB yet (hasn't logged in), create them
+    if (!userB) {
+        userB = new User({ username: friendUsername, friends: [] });
+    }
+
+    // Add User A to User B's friends (if not already there)
+    if (!userB.friends.includes(username)) {
+        userB.friends.push(username);
+
+        // 🔥 ADD NOTIFICATION HERE
+        userB.notifications.push(`👋 ${username} added you as a friend!`);
+
+        await userB.save();
     }
 
     res.json({ message: "Friend added", stats: leetCodeData });
+});
+
+// Route NEW: Get Notifications
+app.get('/notifications/:username', async (req, res) => {
+    const { username } = req.params;
+    const user = await User.findOne({ username });
+    if (!user) return res.json([]);
+    res.json(user.notifications || []);
+});
+
+// Route G: Clear Notifications
+app.post('/clear-notifications', async (req, res) => {
+    const { username } = req.body;
+    try {
+        await User.updateOne({ username }, { $set: { notifications: [] } });
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to clear notifications" });
+    }
 });
 
 // Route C: Get Friends List
 app.get('/friends/:username', async (req, res) => {
     const { username } = req.params;
     const user = await User.findOne({ username });
-    
+
     if (!user) return res.json([]);
 
     const friendPromises = user.friends.map(async (friendName) => {
@@ -128,23 +174,23 @@ app.get('/friends/:username', async (req, res) => {
 
         const contestData = data.userContestRanking || { rating: 0, globalRanking: 0 };
         const submitStats = data.matchedUser.submitStats.acSubmissionNum;
-        
-        const lastSolved = (data.recentAcSubmissionList && data.recentAcSubmissionList.length > 0) 
-            ? data.recentAcSubmissionList[0] 
+
+        const lastSolved = (data.recentAcSubmissionList && data.recentAcSubmissionList.length > 0)
+            ? data.recentAcSubmissionList[0]
             : null;
 
         return {
             username: friendName,
             // 🔥 FIX 2: Added Avatar Field Here
-            avatar: data.matchedUser.profile?.userAvatar, 
-            
+            avatar: data.matchedUser.profile?.userAvatar,
+
             easy: submitStats[1].count,
             medium: submitStats[2].count,
             hard: submitStats[3].count,
             totalSolved: submitStats[0].count,
             lastSolved: lastSolved,
             badges: data.matchedUser.badges || [],
-            submissionCalendar: data.matchedUser.submissionCalendar, 
+            submissionCalendar: data.matchedUser.submissionCalendar,
             contestStats: {
                 rating: Math.round(contestData.rating),
                 globalRank: contestData.globalRanking
@@ -160,14 +206,14 @@ app.get('/friends/:username', async (req, res) => {
 app.get('/stats/:username', async (req, res) => {
     const { username } = req.params;
     const data = await fetchLeetCodeStats(username);
-    
+
     if (!data || !data.matchedUser) return res.status(404).json({ error: "User not found" });
 
     const submitStats = data.matchedUser.submitStats.acSubmissionNum;
     const contestData = data.userContestRanking || { rating: 0, globalRanking: 0 };
-    
-    const lastSolved = (data.recentAcSubmissionList && data.recentAcSubmissionList.length > 0) 
-        ? data.recentAcSubmissionList[0] 
+
+    const lastSolved = (data.recentAcSubmissionList && data.recentAcSubmissionList.length > 0)
+        ? data.recentAcSubmissionList[0]
         : null;
 
     const cleanStats = {
@@ -181,7 +227,7 @@ app.get('/stats/:username', async (req, res) => {
         totalSolved: submitStats[0].count,
         lastSolved: lastSolved,
         badges: data.matchedUser.badges || [],
-        submissionCalendar: data.matchedUser.submissionCalendar, 
+        submissionCalendar: data.matchedUser.submissionCalendar,
         contestStats: {
             rating: Math.round(contestData.rating),
             globalRank: contestData.globalRanking

@@ -5,7 +5,12 @@ import Login from "./components/Login";
 import FriendCard from "./components/FriendCard";
 import CompareWidget from "./components/CompareWidget";
 import DailyChallenge from "./components/DailyChallenge";
-import Leaderboard from "./components/LeaderBoard"; 
+import Leaderboard from "./components/LeaderBoard";
+import Notifications from './components/Notifications';
+
+// REPLACE THIS WITH YOUR RENDER URL (e.g. https://leettracker-app.onrender.com)
+// DO NOT use localhost here if you are deploying to Vercel
+const API_URL = "http://localhost:3000";
 
 function App() {
   // --- STATE MANAGEMENT ---
@@ -16,11 +21,17 @@ function App() {
     !!localStorage.getItem("lc_user")
   );
 
+  // Notification State
+  const [notifications, setNotifications] = useState([]);
+
   // 1. Sort Options (For the Grid)
   const [sortOption, setSortOption] = useState("rank");
-  
-  // 2. NEW: Modal State (Instead of View Mode)
+
+  // 2. Modal State
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+
+  // 3. Notification Dropdown State
+  const [showNotifications, setShowNotifications] = useState(false);
 
   // Data States
   const [friends, setFriends] = useState([]);
@@ -30,7 +41,7 @@ function App() {
   const [userGoal, setUserGoal] = useState(
     Number(localStorage.getItem("lc_goal")) || 0
   );
-  
+
   // UI States
   const [newFriend, setNewFriend] = useState("");
   const [loading, setLoading] = useState(false);
@@ -39,23 +50,43 @@ function App() {
   useEffect(() => {
     if (isLoggedIn && myUsername) {
       refreshFriends();
+      refreshFriends();
       fetchMyStats();
+      fetchNotifications();
     }
   }, [isLoggedIn, myUsername]);
 
   // --- API FUNCTIONS ---
+
+  // 1. LOGIN
   const handleLogin = async (user) => {
     if (!user) return;
     try {
-      await axios.post("https://leettracker-oyfh.onrender.com/login", {
+      const response = await axios.post(`${API_URL}/login`, {
         username: user,
       });
+
+      // Save User
       localStorage.setItem("lc_user", user);
       setMyUsername(user);
       setIsLoggedIn(true);
+
+      // Set Notifications from login response
+      setNotifications(response.data.notifications || []);
+
     } catch (error) {
       const msg = error.response?.data?.error || "Login failed. Is backend running?";
       throw new Error(msg);
+    }
+  };
+
+  // 2. CLEAR NOTIFICATIONS (This was missing)
+  const handleClearNotifications = async () => {
+    try {
+      await axios.post(`${API_URL}/clear-notifications`, { username: myUsername });
+      setNotifications([]); // Clear UI immediately
+    } catch (error) {
+      console.error("Could not clear notifications");
     }
   };
 
@@ -67,7 +98,7 @@ function App() {
   const fetchMyStats = async () => {
     try {
       const res = await axios.get(
-        `https://leettracker-oyfh.onrender.com/stats/${myUsername}`
+        `${API_URL}/stats/${myUsername}`
       );
       setMyStats(res.data);
     } catch (error) {
@@ -75,11 +106,20 @@ function App() {
     }
   };
 
+  const fetchNotifications = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/notifications/${myUsername}`);
+      setNotifications(res.data);
+    } catch (error) {
+      console.error("Failed to fetch notifications");
+    }
+  };
+
   const refreshFriends = async () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://leettracker-oyfh.onrender.com/friends/${myUsername}`
+        `${API_URL}/friends/${myUsername}`
       );
       setFriends(response.data);
     } catch (error) {
@@ -95,7 +135,7 @@ function App() {
       return;
     }
     try {
-      await axios.post("https://leettracker-oyfh.onrender.com/add-friend", {
+      await axios.post(`${API_URL}/add-friend`, {
         username: myUsername,
         friendUsername: newFriend,
       });
@@ -108,12 +148,13 @@ function App() {
 
   const removeFriend = async (friendUsername) => {
     if (!confirm(`Remove ${friendUsername}?`)) return;
-    setFriends(friends.filter((f) => f.username !== friendUsername));
+
     try {
-      await axios.post("https://leettracker-oyfh.onrender.com/remove-friend", {
+      await axios.post(`${API_URL}/remove-friend`, {
         username: myUsername,
         friendUsername: friendUsername,
       });
+      refreshFriends(); // Refresh list after deleting
     } catch (error) {
       alert("Failed to update database");
     }
@@ -136,7 +177,7 @@ function App() {
           const rankB = (b.contestStats?.globalRank) || Infinity;
           const safeA = rankA === 0 ? Infinity : rankA;
           const safeB = rankB === 0 ? Infinity : rankB;
-          return safeA - safeB; 
+          return safeA - safeB;
         case 'total':
           return (b.totalSolved || 0) - (a.totalSolved || 0);
         case 'hard':
@@ -171,36 +212,92 @@ function App() {
         </div>
 
         <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
-          
+
           {/* 3. LEADERBOARD BUTTON (Opens Modal) */}
-          <button 
-             onClick={() => setShowLeaderboard(true)}
-             style={{
-               background: '#ffa116', // Green
-               color: '#040303ff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold'
-             }}
-           >
-             🏆 Leaderboard
-           </button>
+          <button
+            onClick={() => setShowLeaderboard(true)}
+            style={{
+              background: '#ffa116',
+              color: '#040303ff', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold'
+            }}
+          >
+            🏆 Leaderboard
+          </button>
 
           {/* SORT DROPDOWN (Always Visible now) */}
-           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-             <select
-               className="dark-select"
-               value={sortOption}
-               onChange={(e) => setSortOption(e.target.value)}
-               style={{ minWidth: "120px", padding: "6px 10px" }}
-             >
-               <option value="rank">Global Rank</option>
-               <option value="total">Total Solved</option>
-               <option value="hard">Hard Problems</option>
-               <option value="recent">Last Active</option>
-             </select>
-           </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <select
+              className="dark-select"
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              style={{ minWidth: "120px", padding: "6px 10px" }}
+            >
+              <option value="rank">Global Rank</option>
+              <option value="total">Total Solved</option>
+              <option value="hard">Hard Problems</option>
+              <option value="recent">Last Active</option>
+            </select>
+          </div>
 
-          <button onClick={logout} className="delete-btn" style={{padding: '6px 12px'}}>Logout</button>
+
+          <div style={{ position: 'relative' }}>
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              style={{
+                background: '#333',
+                border: 'none',
+                color: '#ffa116',
+                padding: '8px',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                fontSize: '1.2rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '40px',
+                height: '40px'
+              }}
+            >
+              🔔
+              {notifications.length > 0 && (
+                <span style={{
+                  position: 'absolute',
+                  top: '-5px',
+                  right: '-5px',
+                  background: 'red',
+                  color: 'white',
+                  fontSize: '0.7rem',
+                  width: '18px',
+                  height: '18px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 'bold'
+                }}>
+                  {notifications.length}
+                </span>
+              )}
+            </button>
+
+            {/* DROPDOWN */}
+            {showNotifications && (
+              <Notifications
+                messages={notifications}
+                onClear={() => {
+                  handleClearNotifications();
+                  setShowNotifications(false);
+                }}
+                onClose={() => setShowNotifications(false)}
+              />
+            )}
+          </div>
+
+          <button onClick={logout} className="delete-btn" style={{ padding: '6px 12px' }}>Logout</button>
         </div>
       </div>
+
+
 
       <DailyChallenge />
 
@@ -225,25 +322,25 @@ function App() {
       {(friends.length > 0 || myStats) && (
         <>
           <h3 style={{ color: "#888", borderBottom: "1px solid #333", paddingBottom: "10px", marginTop: "30px" }}>
-             Your Network
+            Your Network
           </h3>
-          
+
           <div className="grid">
             {/* Part A: You (Pinned) */}
             {myStats && (
-              <FriendCard 
-                data={myStats} 
-                onRemove={undefined} 
+              <FriendCard
+                data={myStats}
+                onRemove={undefined}
                 goal={userGoal}
                 onSetGoal={handleUpdateGoal}
               />
             )}
             {/* Part B: Friends (Sorted) */}
             {sortedFriendsData.map((friend) => (
-              <FriendCard 
-                key={friend.username} 
-                data={friend} 
-                onRemove={removeFriend} 
+              <FriendCard
+                key={friend.username}
+                data={friend}
+                onRemove={removeFriend}
               />
             ))}
           </div>
@@ -259,9 +356,9 @@ function App() {
 
       {/* 5. LEADERBOARD POPUP (Conditionally Rendered) */}
       {showLeaderboard && (
-        <Leaderboard 
-          friendsData={allUsersData} 
-          onClose={() => setShowLeaderboard(false)} 
+        <Leaderboard
+          friendsData={allUsersData}
+          onClose={() => setShowLeaderboard(false)}
         />
       )}
     </div>

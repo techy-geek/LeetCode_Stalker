@@ -47,7 +47,7 @@ function App() {
   const handleLogin = async (user) => {
     if (!user) return;
     try {
-      await axios.post("https://leettracker-delta.vercel.app/login", {
+      await axios.post("http://localhost:3000/login", {
         username: user,
       });
       localStorage.setItem("lc_user", user);
@@ -67,7 +67,7 @@ function App() {
   const fetchMyStats = async () => {
     try {
       const res = await axios.get(
-        `https://leettracker-delta.vercel.app/stats/${myUsername}`
+        `http://localhost:3000/stats/${myUsername}`
       );
       setMyStats(res.data);
     } catch (error) {
@@ -79,7 +79,7 @@ function App() {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://leettracker-delta.vercel.app/friends/${myUsername}`
+        `http://localhost:3000/friends/${myUsername}`
       );
       setFriends(response.data);
     } catch (error) {
@@ -95,7 +95,7 @@ function App() {
       return;
     }
     try {
-      await axios.post("https://leettracker-delta.vercel.app/add-friend", {
+      await axios.post("http://localhost:3000/add-friend", {
         username: myUsername,
         friendUsername: newFriend,
       });
@@ -110,7 +110,7 @@ function App() {
     if (!confirm(`Remove ${friendUsername}?`)) return;
     setFriends(friends.filter((f) => f.username !== friendUsername));
     try {
-      await axios.post("https://leettracker-delta.vercel.app/remove-friend", {
+      await axios.post("http://localhost:3000/remove-friend", {
         username: myUsername,
         friendUsername: friendUsername,
       });

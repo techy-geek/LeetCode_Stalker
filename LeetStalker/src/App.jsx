@@ -10,9 +10,8 @@ import Notifications from './components/Notifications';
 import RecentActivityModal from "./components/RecentActivityModal";
 import ActivityHeatmap from "./components/ActivityHeatmap";
 
-// REPLACE THIS WITH YOUR RENDER URL (e.g. https://leettracker-app.onrender.com)
-// DO NOT use localhost here if you are deploying to Vercel
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from "./config";
+
 
 function App() {
   // --- STATE MANAGEMENT ---

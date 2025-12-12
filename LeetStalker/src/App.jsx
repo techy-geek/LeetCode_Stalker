@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API_URL = "http//localhost:3000"
 import "./App.css";
 import Login from "./components/Login";
 import FriendCard from "./components/FriendCard";
@@ -7,10 +8,7 @@ import CompareWidget from "./components/CompareWidget";
 import DailyChallenge from "./components/DailyChallenge";
 import Leaderboard from "./components/LeaderBoard";
 import Notifications from './components/Notifications';
-import RecentActivityModal from "./components/RecentActivityModal";
-import ActivityHeatmap from "./components/ActivityHeatmap";
 
-import { API_URL } from "./config";
 
 
 function App() {
@@ -30,7 +28,6 @@ function App() {
 
   // 2. Modal State
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [showActivity, setShowActivity] = useState(false);
 
   // 3. Notification Dropdown State
   const [showNotifications, setShowNotifications] = useState(false);
@@ -51,6 +48,7 @@ function App() {
   // --- EFFECTS ---
   useEffect(() => {
     if (isLoggedIn && myUsername) {
+      refreshFriends();
       refreshFriends();
       fetchMyStats();
       fetchNotifications();
@@ -81,7 +79,7 @@ function App() {
     }
   };
 
-  // 2. CLEAR NOTIFICATIONS
+  // 2. CLEAR NOTIFICATIONS (This was missing)
   const handleClearNotifications = async () => {
     try {
       await axios.post(`${API_URL}/clear-notifications`, { username: myUsername });
@@ -168,7 +166,7 @@ function App() {
     setMyStats(null);
   };
 
-  // --- SORTING LOGIC ---
+  // --- SORTING LOGIC (For Grid View) ---
   const getSortedFriends = () => {
     let list = [...friends];
     return list.sort((a, b) => {
@@ -192,6 +190,8 @@ function App() {
   };
 
   const sortedFriendsData = getSortedFriends();
+
+  // Combined Data for Leaderboard Modal (You + Friends)
   const allUsersData = myStats ? [myStats, ...friends] : friends;
 
   // --- RENDER ---
@@ -212,17 +212,7 @@ function App() {
 
         <div style={{ display: "flex", gap: "15px", alignItems: "center" }}>
 
-          {/* RECENT ACTIVITY & LEADERBOARD BUTTONS */}
-          <button
-            onClick={() => setShowActivity(true)}
-            style={{
-              background: '#333',
-              color: '#ffa116', border: '1px solid #ffa116', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.9rem', fontWeight: 'bold'
-            }}
-          >
-            🕒 Recent Activity
-          </button>
-
+          {/* 3. LEADERBOARD BUTTON (Opens Modal) */}
           <button
             onClick={() => setShowLeaderboard(true)}
             style={{
@@ -233,7 +223,7 @@ function App() {
             🏆 Leaderboard
           </button>
 
-          {/* SORT DROPDOWN */}
+          {/* SORT DROPDOWN (Always Visible now) */}
           <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
             <select
               className="dark-select"
@@ -248,7 +238,7 @@ function App() {
             </select>
           </div>
 
-          {/* NOTIFICATION BELL */}
+
           <div style={{ position: 'relative' }}>
             <button
               onClick={() => setShowNotifications(!showNotifications)}
@@ -289,7 +279,7 @@ function App() {
               )}
             </button>
 
-            {/* NOTIFICATION DROPDOWN */}
+            {/* DROPDOWN */}
             {showNotifications && (
               <Notifications
                 messages={notifications}
@@ -306,6 +296,8 @@ function App() {
         </div>
       </div>
 
+
+
       <DailyChallenge />
 
       {/* Input Group */}
@@ -313,7 +305,7 @@ function App() {
         <input
           placeholder="Enter username (e.g. neal_wu)..."
           value={newFriend}
-          onChange={(e) => setNewFriend(e.target.value.toLowerCase())}
+          onChange={(e) => setNewFriend(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && addFriend()}
         />
         <button className="primary-btn" onClick={addFriend}>
@@ -321,17 +313,11 @@ function App() {
         </button>
       </div>
 
-      {/* 1. COMPARE WIDGET */}
       {myStats && friends.length > 0 && (
         <CompareWidget myStats={myStats} friends={friends} />
       )}
 
-      {/* 🔥 2. HEATMAP (ADDED HERE) 🔥 */}
-      {myStats && (
-        <ActivityHeatmap submissionCalendar={myStats.submissionCalendar} />
-      )}
-
-      {/* 3. YOUR NETWORK GRID */}
+      {/* 4. GRID VIEW (Always Rendered) */}
       {(friends.length > 0 || myStats) && (
         <>
           <h3 style={{ color: "#888", borderBottom: "1px solid #333", paddingBottom: "10px", marginTop: "30px" }}>
@@ -367,18 +353,11 @@ function App() {
         </div>
       )}
 
-      {/* MODALS */}
+      {/* 5. LEADERBOARD POPUP (Conditionally Rendered) */}
       {showLeaderboard && (
         <Leaderboard
           friendsData={allUsersData}
           onClose={() => setShowLeaderboard(false)}
-        />
-      )}
-
-      {showActivity && (
-        <RecentActivityModal
-          friends={friends}
-          onClose={() => setShowActivity(false)}
         />
       )}
     </div>

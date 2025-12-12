@@ -11,10 +11,10 @@ const Login = ({ onLogin }) => {
       setError('Please enter a username');
       return;
     }
-    
+
     setError('');
     setIsLoading(true);
-  
+
     try {
       await onLogin(username);
     } catch (e) {
@@ -31,19 +31,19 @@ const Login = ({ onLogin }) => {
   return (
     <div className="login-wrapper">
       <div className="login-card">
-        
+
         {/* --- LOGO SECTION --- */}
         <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
-          <img 
-            src="/image.png" 
-            alt="LeetStalker Logo" 
-            style={{ 
-              width: '80px', 
-              height: '80px', 
+          <img
+            src="/image.png"
+            alt="LeetStalker Logo"
+            style={{
+              width: '80px',
+              height: '80px',
               borderRadius: '50%',
               boxShadow: '0 0 20px rgba(12, 143, 243, 0.4)',
               border: '2px solid rgba(40, 175, 153, 0.5)'
-            }} 
+            }}
             onError={(e) => { e.target.style.display = 'none' }}
           />
         </div>
@@ -65,12 +65,12 @@ const Login = ({ onLogin }) => {
               LEETCODE USERNAME
             </label>
           </div>
-          
-          <input 
-            placeholder="e.g. neal_wu" 
+
+          <input
+            placeholder="e.g. neal_wu"
             value={username}
             onChange={(e) => {
-              setUsername(e.target.value);
+              setUsername(e.target.value.toLowerCase());
               setError('');
             }}
             onKeyDown={handleKeyDown}
@@ -80,8 +80,8 @@ const Login = ({ onLogin }) => {
 
           {error && <div className="error-msg">⚠️ {error}</div>}
 
-          <button 
-            onClick={handleSubmit} 
+          <button
+            onClick={handleSubmit}
             className="primary-btn login-btn"
             disabled={isLoading}
             style={{ backgroundColor: '#28af43ff', color: '#000' }}
@@ -95,7 +95,7 @@ const Login = ({ onLogin }) => {
         </div>
 
         <div className="login-footer">
-          By connecting, you agree to become a better coder. <br/>
+          By connecting, you agree to become a better coder. <br />
           <span style={{ opacity: 0.6, fontSize: '0.8em' }}>Made by Anurag Sharma</span>
         </div>
       </div>

@@ -1,4 +1,7 @@
-import { API_URL } from "../config";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+// Import the URL from the config file we just created
+import { API_URL } from "../config"; 
 
 const DailyChallenge = () => {
   const [daily, setDaily] = useState(null);
@@ -6,6 +9,7 @@ const DailyChallenge = () => {
   useEffect(() => {
     const fetchDaily = async () => {
       try {
+        // Use template literal `${}` to combine the base URL with the endpoint
         const res = await axios.get(`${API_URL}/daily-question`);
         setDaily(res.data);
       } catch (error) {
@@ -27,7 +31,7 @@ const DailyChallenge = () => {
         ? "#ffc01e"
         : "#ff375f";
 
-  // 2. Determine Text Color for contrast (Black text on Yellow, White on Red/Teal)
+  // 2. Determine Text Color for contrast
   const btnTextColor = question.difficulty === "Medium" ? "#000" : "#fff";
 
   return (
@@ -66,7 +70,7 @@ const DailyChallenge = () => {
           style={{
             color: color,
             fontWeight: "bold",
-            background: `${color}20`, // 20% opacity background
+            background: `${color}20`,
             padding: "5px 12px",
             borderRadius: "20px",
             display: "inline-block",
@@ -90,10 +94,9 @@ const DailyChallenge = () => {
               fontWeight: "600",
               cursor: "pointer",
               display: "inline-block",
-              // --- UPDATED STYLES HERE ---
-              backgroundColor: color,      // Background matches difficulty
-              color: btnTextColor,         // Text color adapts for contrast
-              border: `1px solid ${color}` // Border matches difficulty
+              backgroundColor: color,      
+              color: btnTextColor,         
+              border: `1px solid ${color}` 
             }}
           >
             Solve

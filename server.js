@@ -29,7 +29,6 @@ const LEETCODE_API_URL = 'https://leetcode.com/graphql';
 
 // --- HELPER FUNCTION ---
 async function fetchLeetCodeStats(username) {
-    console.log(`[FETCH] Starting LeetCode fetch for: ${username}`); // <--- ENTRY LOG
     // 🔥 FIX 1: Updated Query Structure to fetch Avatar correctly
     const query = `
       query getUserProfile($username: String!) {
@@ -37,13 +36,10 @@ async function fetchLeetCodeStats(username) {
         matchedUser(username: $username) {
           submissionCalendar
           
-           profile {
+          profile {         # <--- User Avatar MUST be inside 'profile'
              userAvatar
              realName
-           }
-           # DEBUG LOG
-           submitStats {
-
+          }
 
           badges {
             displayName
@@ -64,40 +60,18 @@ async function fetchLeetCodeStats(username) {
           rating
           globalRanking
         }
-        userContestRankingHistory(username: $username) {
-            attended
-            rating
-            contest {
-                title
-                startTime
-            }
-        }
       }
     `;
 
     try {
-        const response = await axios.post('https://leetcode.com/graphql', {
-            query,
-            variables: { username }
-        }, {
-            headers: {
-                'Content-Type': 'application/json',
-                'Referer': 'https://leetcode.com',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
-        });
-
-        if (response.data.errors) {
-            console.error(`GraphQL Error for ${username}:`, response.data.errors);
-        }
-
-        // DEBUG LOG
-        const history = response.data.data?.userContestRankingHistory;
-        console.log(`[DEBUG] Fetched ${username}. History length: ${history ? history.length : 'NULL'}`);
-
+        const response = await axios.post(
+            LEETCODE_API_URL,
+            { query, variables: { username } },
+            { headers: { 'Referer': 'https://leetcode.com', 'Content-Type': 'application/json' } }
+        );
         return response.data.data;
     } catch (error) {
-        console.error(`Error fetching stats for ${username}:`, error.message);
+        console.error("LeetCode Fetch Error:", error.message);
         return null;
     }
 }
@@ -222,14 +196,7 @@ app.get('/friends/:username', async (req, res) => {
             contestStats: {
                 rating: Math.round(contestData.rating),
                 globalRank: contestData.globalRanking
-            },
-            contestHistory: (data.userContestRankingHistory || [])
-                .map(c => ({
-                    title: c.contest.title,
-                    startTime: c.contest.startTime,
-                    rating: Math.round(c.rating),
-                    attended: c.attended
-                }))
+            }
         };
     });
 
@@ -240,7 +207,6 @@ app.get('/friends/:username', async (req, res) => {
 // Route D: Get My Stats
 app.get('/stats/:username', async (req, res) => {
     const { username } = req.params;
-    console.log(`[ROUTE] /stats called for: ${username}`); // <--- ENTRY LOG
     const data = await fetchLeetCodeStats(username);
 
     if (!data || !data.matchedUser) return res.status(404).json({ error: "User not found" });
@@ -264,18 +230,12 @@ app.get('/stats/:username', async (req, res) => {
         lastSolved: lastSolved,
         recentSubmissions: data.recentAcSubmissionList || [], // Added full list
         badges: data.matchedUser.badges || [],
+        badges: data.matchedUser.badges || [],
         submissionCalendar: data.matchedUser.submissionCalendar,
         contestStats: {
             rating: Math.round(contestData.rating),
             globalRank: contestData.globalRanking
-        },
-        contestHistory: (data.userContestRankingHistory || [])
-            .map(c => ({
-                title: c.contest.title,
-                startTime: c.contest.startTime,
-                rating: Math.round(c.rating),
-                attended: c.attended
-            }))
+        }
     };
 
     res.json(cleanStats);

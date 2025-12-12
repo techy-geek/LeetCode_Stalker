@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { API_URL } from "../config";
 
 const DailyChallenge = () => {
   const [daily, setDaily] = useState(null);
@@ -7,7 +6,7 @@ const DailyChallenge = () => {
   useEffect(() => {
     const fetchDaily = async () => {
       try {
-        const res = await axios.get("https://leettracker-oyfh.onrender.com/daily-question");
+        const res = await axios.get(`${API_URL}/daily-question`);
         setDaily(res.data);
       } catch (error) {
         console.error("Error fetching daily");
@@ -25,8 +24,8 @@ const DailyChallenge = () => {
     question.difficulty === "Easy"
       ? "#00b8a3"
       : question.difficulty === "Medium"
-      ? "#ffc01e"
-      : "#ff375f";
+        ? "#ffc01e"
+        : "#ff375f";
 
   // 2. Determine Text Color for contrast (Black text on Yellow, White on Red/Teal)
   const btnTextColor = question.difficulty === "Medium" ? "#000" : "#fff";
@@ -97,7 +96,7 @@ const DailyChallenge = () => {
               border: `1px solid ${color}` // Border matches difficulty
             }}
           >
-             Solve
+            Solve
           </a>
         </div>
       </div>

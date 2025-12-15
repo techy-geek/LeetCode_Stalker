@@ -241,30 +241,6 @@ const FriendCard = ({ data, onRemove, goal, onSetGoal }) => {
           )}
         </div>
 
-        {/* === BACK SIDE (GRAPH) === */}
-        <div className="card-back">
-          <div style={{ padding: '15px', height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h4 style={{ margin: 0, color: '#ffa116' }}>Contest Rating</h4>
-              <button
-                onClick={() => setIsFlipped(false)}
-                style={{ background: '#333', border: 'none', color: '#fff', fontSize: '0.7rem', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
-              >
-                ↩ Back
-              </button>
-            </div>
-
-            <div style={{ flexGrow: 1, position: 'relative' }}>
-              {contestHistory.length > 0 ? (
-                <Line data={chartData} options={chartOptions} />
-              ) : (
-                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666' }}>
-                  No contest data
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
 
       </div>
     </div>

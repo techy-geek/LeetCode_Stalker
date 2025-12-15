@@ -283,6 +283,11 @@ app.get('/daily-question', async (req, res) => {
     }
 });
 
+app.use(cors({
+    origin: ["https://leettracker-delta.vercel.app/", "http://localhost:5173"], // Allow your frontend URLs
+    credentials: true
+}));
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
